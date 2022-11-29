@@ -1,0 +1,24 @@
+{% extends 'base.html' %}
+
+{% block title %}
+
+Регистрация пользователя
+
+{% endblock title %}
+
+{% block content %}
+
+<h1 class="signup-heading">Регистрация на сайте</h1>
+
+<p class="signup-para">Используйте следующую форму для регистрации на сайте:</p>
+
+<div class="signup-form">
+  <form method="POST">
+    {% csrf_token %}
+    {{form.as_p}}
+    <p><input type="submit" value="Зарегистрироваться"></p>
+  </form>
+
+</div>
+
+{% endblock content %}
