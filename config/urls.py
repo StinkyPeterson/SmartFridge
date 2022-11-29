@@ -18,6 +18,6 @@ from django.urls import path, include
 from smartfridge.views import home
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('', home, name = 'home'),
+    path('', include('smartfridge.urls')),
     path('accounts/', include('accounts.urls'))
 ]

@@ -1,4 +1,5 @@
 from django.db import models
+from django.contrib.auth.models import User
 
 from django.contrib.auth import get_user_model
 
@@ -7,14 +8,21 @@ class Product(models.Model):
     product_type = models.CharField(max_length=50)
     bar_code = models.IntegerField()
 
+    def __str__(self):
+        return self.name
+
 
 class ListOfProduct(models.Model):
-    id_user = models.ForeignKey()
-    id_product = models.ForeignKey()
+    id_user = models.ForeignKey(User, on_delete=models.DO_NOTHING)
+    id_product = models.ForeignKey('Product', on_delete=models.DO_NOTHING)
     price = models.IntegerField()
     date_purchase = models.DateField()
     quantity = models.IntegerField()
 
+    def __str__(self):
+        return self.id_product.name
+
 
 class ProductShelfDate(models.Model):
-    id_product = models.ForeignKey()
+    id_product = models.ForeignKey('Product', primary_key=True, on_delete=models.CASCADE)
+    date = models.DateField()

@@ -5,5 +5,9 @@
 {% endblock %}
 
 {%block content%}
-<h1>йооооо/</h1>
+{%for product in product_list%}
+    <div class="product">
+        <h2>{{product.id_product.name}}   {{product.price}} руб.  {{product.quantity}} шт.</h2>
+    </div>
+{% endfor %}
 {%endblock%}
