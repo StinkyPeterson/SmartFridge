@@ -19,8 +19,8 @@
         {% if user.is_authenticated %}
 
         Добро пожаловать, {{ user.username }}
-
-        <a href="{% url 'logout' %}">Выйти из аккаунта</a>
+        <li><a href="{% url 'logout' %}">Выйти из аккаунта</a></li>
+        <li><a href="{% url 'scaner' %}">Сканировать чек</a></li>
         {% else %}
         <li><a href="{% url 'login' %}">Вход</a></li>
         <li><a href="{% url 'sign_up' %}">Регистрация</a></li>
