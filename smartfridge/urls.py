@@ -3,6 +3,6 @@ from smartfridge.views import home, scaner
 
 urlpatterns = [
     path('', home, name='home'),
-    path('/scan', scaner, name='scaner')
+    path('scan/', scaner, name='scaner')
 
 ]

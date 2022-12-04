@@ -7,6 +7,8 @@
 {%block content%}
 <h2>Сканируйте чек</h2>
 <form method="POST">
-    <input></input>
+    {% csrf_token %}
+    {{ form.as_p }}
+    <p><input type="submit" value="Сканировать чек"></p>
 </form>
 {% endblock %}
