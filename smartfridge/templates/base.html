@@ -21,6 +21,7 @@
         Добро пожаловать, {{ user.username }}
         <li><a href="{% url 'logout' %}">Выйти из аккаунта</a></li>
         <li><a href="{% url 'scaner' %}">Сканировать чек</a></li>
+        <li><a href="{% url 'notifications' %}">Уведомления</a></li>
         {% else %}
         <li><a href="{% url 'login' %}">Вход</a></li>
         <li><a href="{% url 'sign_up' %}">Регистрация</a></li>

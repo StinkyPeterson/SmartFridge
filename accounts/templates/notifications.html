@@ -1,0 +1,15 @@
+{%extends 'base.html'%}
+
+{%block title%}
+Увеломления
+{% endblock %}
+
+{% block content %}
+    {% for note in notifications %}
+    <div class="notification">
+        <h2>
+            {{note.message}}
+        </h2>
+    </div>
+    {% endfor %}
+{% endblock %}
