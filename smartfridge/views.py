@@ -8,7 +8,7 @@ from smartfridge.forms import ScanForm
 import requests
 
 def home(request):
-    products = ListOfProduct.objects.all().filter(id_user = request.user.id)
+    products = ListOfProduct.objects.all().filter(id_user = request.user.id, in_fridge = True)
     return render(request, 'home.html', {'product_list': products})
 
 def scaner(request):
@@ -19,20 +19,23 @@ def scaner(request):
     if request.method == 'POST':
         form = ScanForm(request.POST)
         if form.is_valid():
-            r = request_check(form)
-            data = json.loads(r.text)
-            products = data['data']['json']['items']
-            insert_products(products, request)
+            r = request_check(form) #запрос через API проверка чека
+            data = json.loads(r.text) #получение чека 
+            # print(r.text)
+            products = data['data']['json']['items'] #получение списка продуктов
+            date = data['data']['json']['dateTime'].split('T')[0] #получение даты покупки 
+            insert_products(products, request,date) #добавление продуктов в БД
             return redirect('scaner')
 
 
 
-def insert_products(products, request):
+
+def insert_products(products, request,date):
     for product in products:
         print(product['name'])
         new_product = Product()
         new_product.name = product['name']
-        new_product.product_type = str(product['productType'])
+        # new_product.product_type = str(product['productType'])
         new_product.bar_code = 0
         product_db = Product.objects.all().filter(name=new_product.name)
         if not product_db:
@@ -40,21 +43,25 @@ def insert_products(products, request):
         product_in_fridge = ListOfProduct()
         product_in_fridge.id_user = request.user
         if product_db:
-            print(type(Product.objects.get(name=new_product.name, product_type=new_product.product_type)))
-            product_in_fridge.id_product = Product.objects.all().get(name=new_product.name,
-                                                                     product_type=new_product.product_type)
+            product_in_fridge.id_product = Product.objects.all().get(name=new_product.name)
         else:
             product_in_fridge.id_product = new_product
         product_in_fridge.price = int(product['sum']) / 100
         product_in_fridge.quantity = int(product['quantity'])
-        product_in_fridge.date_purchase = datetime.date.today()
+        product_in_fridge.date_purchase = date
+        product_in_fridge.in_fridge = True
         if product_db:
-            product_in_fridge_db = ListOfProduct.objects.get(id_user=request.user.id,
+            try:
+                product_in_fridge_db = ListOfProduct.objects.get(id_user=request.user.id,
                                                              id_product=Product.objects.get(name=new_product.name,
-                                                                                            product_type=new_product.product_type))
+                                                                                            ), date_purchase = date)
+            except:
+                product_in_fridge_db = None
             if product_in_fridge_db:
                 product_in_fridge_db.quantity += product_in_fridge.quantity
                 product_in_fridge_db.save(update_fields=['quantity'])
+            else:
+                product_in_fridge.save()
         else:
             product_in_fridge.save()
     # print(data['data']['json']['items'])
@@ -64,7 +71,7 @@ def insert_products(products, request):
 def request_check(form):
     data = form.data
     url = 'https://proverkacheka.com/api/v1/check/get'
-    token = '17639.WgFbE0Usn2HhAGg8e'
+    token = '17639.sZzypiyIlKZDohxS6'
     data = {
         'token': token,
         'qrraw': data.get('qrcode_string')
@@ -72,4 +79,15 @@ def request_check(form):
     r = requests.post(url, data=data)
     return r
 
+
+def delete_product(request, id):
+    product = ListOfProduct.objects.get(id = id)
+    product.quantity -= 1
+    if product.quantity <= 0:
+        product.in_fridge = False
+        product.save()
+    else:
+        product.save(update_fields=['quantity'])
+
+    return redirect('home')
 # Create your views here.

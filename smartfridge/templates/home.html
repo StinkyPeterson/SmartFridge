@@ -5,9 +5,28 @@
 {% endblock %}
 
 {%block content%}
-{%for product in product_list%}
-    <div class="product">
-        <h2>{{product.id_product.name}}   {{product.price}} руб.  {{product.quantity}} шт.</h2>
-    </div>
-{% endfor %}
+    
+    <table class="table">
+        <thead>
+          <tr>
+            <th scope="col">Название</th>
+            <th scope="col">Цена</th>
+            <th scope="col">Количество шт.</th>
+            <th scope="col">Дата покупки</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody>
+            {%for product in product_list%}
+          <tr>
+            <th scope="row">{{product.id_product.name}}</th>
+            <td>{{product.price}} руб.</td>
+            <td>{{product.quantity}}</td>
+            <td>{{product.date_purchase}}</td>
+            <td><button class="btn primary"><a href="{% url 'delete' id=product.id %}"> Удалить продукт</a></button></td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+
 {%endblock%}

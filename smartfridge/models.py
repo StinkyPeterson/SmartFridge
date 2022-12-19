@@ -5,7 +5,7 @@ from django.contrib.auth import get_user_model
 
 class Product(models.Model):
     name = models.CharField(max_length=100)
-    product_type = models.CharField(max_length=50)
+    # product_type = models.CharField(max_length=50)
     bar_code = models.CharField(max_length=50)
 
     def __str__(self):
@@ -18,6 +18,7 @@ class ListOfProduct(models.Model):
     price = models.FloatField()
     date_purchase = models.DateField()
     quantity = models.IntegerField()
+    in_fridge = models.BooleanField()
 
     def __str__(self):
         return self.id_product.name

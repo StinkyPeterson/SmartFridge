@@ -9,39 +9,39 @@
 </head>
 <body>
 <nav class="navbar navbar-expand-lg navbar-light bg-light">
-  <a class="navbar-brand" href="#">Твой холодильник</a>
+  <a class="navbar-brand" href="{% url 'home'%}">Твой холодильник</a>
   <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
     <span class="navbar-toggler-icon"></span>
   </button>
   <div class="collapse navbar-collapse" id="navbarNav">
-
     <ul class="navbar-nav">
         {% if user.is_authenticated %}
 
-        Добро пожаловать, {{ user.username }}
-        <li><a href="{% url 'logout' %}">Выйти из аккаунта</a></li>
-        <li><a href="{% url 'scaner' %}">Сканировать чек</a></li>
-        <li><a href="{% url 'notifications' %}">Уведомления</a></li>
-        {% else %}
-        <li><a href="{% url 'login' %}">Вход</a></li>
-        <li><a href="{% url 'sign_up' %}">Регистрация</a></li>
-        {% endif %}
-        <!--
-      <li class="nav-item active">
-        <a class="nav-link" href="#">Home <span class="sr-only">(current)</span></a>
-      </li>
-      <li class="nav-item">
-        <a class="nav-link" href="#">Features</a>
-      </li>
-      <li class="nav-item">
-        <a class="nav-link" href="#">Pricing</a>
-      </li>
-      <li class="nav-item">
-        <a class="nav-link disabled" href="#">Disabled</a>
-      </li>
-      --!>
-    </ul>
+          <li class="nav-item">
+            <a class="nav-link" href="{% url 'notifications' %}">Уведомления</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="{% url 'scaner' %}">Сканировать чек</a>
+          </li>
 
+          <li class="navbar-text">
+            Добро пожаловать, {{ user.username }}
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="{% url 'logout' %}">Выйти из аккаунта</a>
+          </li>
+
+        {% else %}
+          <li class="nav-item">
+            <a class="nav-link" href="{% url 'login' %}">Вход</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="{% url 'sign_up' %}">Регистрация</a>
+          </li>
+        {% endif %}
+
+    
+    </ul>
   </div>
 </nav>
 {%block content%}
