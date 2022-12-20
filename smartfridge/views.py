@@ -100,27 +100,24 @@ def script(request):
 
     for user in users:
         products = ListOfProduct.objects.all().filter(id_user=user)
-        produ = {}
+        diction_product = {}
         for product in products:
 
-            if product.id_product.name in produ:
-                produ[product.id_product.name]+=1
+            if product.id_product.name in diction_product:
+                diction_product[product.id_product.name]+=1
             else:
-                produ[product.id_product.name] = 1
-        print(produ)
-        for product in produ:
-            if produ[product]>2:
+                diction_product[product.id_product.name] = 1
+        print(diction_product)
+        for product in diction_product:
+            if diction_product[product]>2:
                 products_analiz = ListOfProduct.objects.all().filter(id_user=user,id_product=Product.objects.get(name = product))
-                pro = products_analiz[1:]
+                slice_product = products_analiz[1:]
                 for product_anal in products_analiz:
                     print(product_anal.date_purchase)
-                #print(product_anal.date_purchase)
-                print(pro[0].date_purchase)
-                pro0 = pro[0].date_purchase
-                print(pro[1].date_purchase)
-                pro1 = pro[1].date_purchase
-                proItog = (pro1-pro0)
-                notific = Notification(id_user = user,message = f'У вас может закончится {Product.objects.get(name = product)} докупите его',date = pro1+proItog)
+                slice_product_post = slice_product[0].date_purchase
+                slice_product_now = slice_product[1].date_purchase
+                slice_product_finish = (slice_product_now-slice_product_post)
+                notific = Notification(id_user = user,message = f'У вас может закончится {Product.objects.get(name = product)} докупите его',date = slice_product_now + slice_product_finish)
                 notific.save()
 
     return redirect("home")
