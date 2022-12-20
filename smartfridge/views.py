@@ -5,7 +5,9 @@ from django.shortcuts import render, redirect
 from django.views.generic import ListView, DetailView
 from smartfridge.models import ListOfProduct, Product
 from smartfridge.forms import ScanForm
+from django.contrib.auth.models import User
 import requests
+from accounts.models import Notification
 
 def home(request):
     products = ListOfProduct.objects.all().filter(id_user = request.user.id, in_fridge = True)
@@ -90,4 +92,36 @@ def delete_product(request, id):
         product.save(update_fields=['quantity'])
 
     return redirect('home')
+
+
+def script(request):
+    users = User.objects.all()
+    #print(users[0])
+
+    for user in users:
+        products = ListOfProduct.objects.all().filter(id_user=user)
+        produ = {}
+        for product in products:
+
+            if product.id_product.name in produ:
+                produ[product.id_product.name]+=1
+            else:
+                produ[product.id_product.name] = 1
+        print(produ)
+        for product in produ:
+            if produ[product]>2:
+                products_analiz = ListOfProduct.objects.all().filter(id_user=user,id_product=Product.objects.get(name = product))
+                pro = products_analiz[1:]
+                for product_anal in products_analiz:
+                    print(product_anal.date_purchase)
+                #print(product_anal.date_purchase)
+                print(pro[0].date_purchase)
+                pro0 = pro[0].date_purchase
+                print(pro[1].date_purchase)
+                pro1 = pro[1].date_purchase
+                proItog = (pro1-pro0)
+                notific = Notification(id_user = user,message = f'У вас может закончится {Product.objects.get(name = product)} докупите его',date = pro1+proItog)
+                notific.save()
+
+    return redirect("home")
 # Create your views here.
