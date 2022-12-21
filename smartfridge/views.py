@@ -5,7 +5,9 @@ from django.shortcuts import render, redirect
 from django.views.generic import ListView, DetailView
 from smartfridge.models import ListOfProduct, Product
 from smartfridge.forms import ScanForm
+from django.contrib.auth.models import User
 import requests
+from accounts.models import Notification
 
 def home(request):
     products = ListOfProduct.objects.all().filter(id_user = request.user.id, in_fridge = True)
@@ -90,4 +92,33 @@ def delete_product(request, id):
         product.save(update_fields=['quantity'])
 
     return redirect('home')
+
+
+def script(request):
+    users = User.objects.all()
+    #print(users[0])
+
+    for user in users:
+        products = ListOfProduct.objects.all().filter(id_user=user)
+        diction_product = {}
+        for product in products:
+
+            if product.id_product.name in diction_product:
+                diction_product[product.id_product.name]+=1
+            else:
+                diction_product[product.id_product.name] = 1
+        print(diction_product)
+        for product in diction_product:
+            if diction_product[product]>2:
+                products_analiz = ListOfProduct.objects.all().filter(id_user=user,id_product=Product.objects.get(name = product))
+                slice_product = products_analiz[1:]
+                for product_anal in products_analiz:
+                    print(product_anal.date_purchase)
+                slice_product_post = slice_product[0].date_purchase
+                slice_product_now = slice_product[1].date_purchase
+                slice_product_finish = (slice_product_now-slice_product_post)
+                notific = Notification(id_user = user,message = f'У вас может закончится {Product.objects.get(name = product)} докупите его',date = slice_product_now + slice_product_finish)
+                notific.save()
+
+    return redirect("home")
 # Create your views here.
