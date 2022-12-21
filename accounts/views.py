@@ -4,6 +4,7 @@ from accounts.forms import UserSignUpForm
 from django.urls import reverse_lazy
 from django.shortcuts import render, redirect
 from accounts.models import Notification
+from datetime import date
 
 class UserCreationView(CreateView):
     form_class = UserSignUpForm
@@ -12,7 +13,7 @@ class UserCreationView(CreateView):
 
 
 def notification_view(request):
-    notifications = Notification.objects.all().filter(id_user = request.user.id)
+    notifications = Notification.objects.all().filter(id_user = request.user.id, date = date.today())
     return render(request, 'notifications.html', {'notifications' : notifications})
 
 # Create your views here.

@@ -14,7 +14,6 @@ def home(request):
     return render(request, 'home.html', {'product_list': products})
 
 def scaner(request):
-    t = "20221115T2244 & s = 135.87 & fn = 9960440301659302 & i = 86567 & fp = 1068132758 & n = 1"
     if request.method == 'GET':
         form = ScanForm()
         return render(request, 'scan.html', {"form" : form})
@@ -27,6 +26,7 @@ def scaner(request):
             products = data['data']['json']['items'] #получение списка продуктов
             date = data['data']['json']['dateTime'].split('T')[0] #получение даты покупки 
             insert_products(products, request,date) #добавление продуктов в БД
+            script(request)
             return redirect('scaner')
 
 
@@ -97,12 +97,10 @@ def delete_product(request, id):
 def script(request):
     users = User.objects.all()
     #print(users[0])
-
     for user in users:
         products = ListOfProduct.objects.all().filter(id_user=user)
         diction_product = {}
         for product in products:
-
             if product.id_product.name in diction_product:
                 diction_product[product.id_product.name]+=1
             else:
@@ -118,7 +116,12 @@ def script(request):
                 slice_product_now = slice_product[1].date_purchase
                 slice_product_finish = (slice_product_now-slice_product_post)
                 notific = Notification(id_user = user,message = f'У вас может закончится {Product.objects.get(name = product)} докупите его',date = slice_product_now + slice_product_finish)
-                notific.save()
+                try:
+                    notific_db = Notification.objects.get(id_user = notific.id_user, message = notific.message, date = notific.date)
+                except:
+                    notific_db = None
+                if not notific_db:
+                    notific.save()
 
-    return redirect("home")
+    #return redirect("home")
 # Create your views here.

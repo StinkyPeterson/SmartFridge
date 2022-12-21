@@ -6,5 +6,4 @@ urlpatterns = [
     path('scan/', scaner, name='scaner'),
     path('delete/(?P<id>\d+)/$', delete_product, name='delete'),
     path('analiz/',script,name = 'script')
-
 ]
