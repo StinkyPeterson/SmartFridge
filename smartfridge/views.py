@@ -73,7 +73,7 @@ def insert_products(products, request,date):
 def request_check(form):
     data = form.data
     url = 'https://proverkacheka.com/api/v1/check/get'
-    token = '17639.sZzypiyIlKZDohxS6'
+    token = 'INPUT YOUR TOKEN HERE'
     data = {
         'token': token,
         'qrraw': data.get('qrcode_string')
