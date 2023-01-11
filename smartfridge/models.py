@@ -27,3 +27,6 @@ class ListOfProduct(models.Model):
 class ProductShelfDate(models.Model):
     id_product = models.ForeignKey('Product', primary_key=True, on_delete=models.CASCADE)
     date = models.DateField()
+
+class Images(models.Model):
+    image = models.ImageField(upload_to='images/', null=False, blank=False)

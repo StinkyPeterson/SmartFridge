@@ -6,7 +6,12 @@
 
 {%block content%}
 <h2>Сканируйте чек</h2>
-<form method="POST">
+<!-- <form method="POST">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <p><input type="submit" value="Сканировать чек"></p>
+</form> -->
+<form method="POST" action="" enctype='multipart/form-data'>
     {% csrf_token %}
     {{ form.as_p }}
     <p><input type="submit" value="Сканировать чек"></p>

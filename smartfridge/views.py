@@ -3,8 +3,8 @@ import datetime
 
 from django.shortcuts import render, redirect
 from django.views.generic import ListView, DetailView
-from smartfridge.models import ListOfProduct, Product
-from smartfridge.forms import ScanForm
+from smartfridge.models import ListOfProduct, Product, Images
+from smartfridge.forms import ScanForm, ScanImageForm
 from django.contrib.auth.models import User
 import requests
 from accounts.models import Notification
@@ -15,14 +15,20 @@ def home(request):
 
 def scaner(request):
     if request.method == 'GET':
-        form = ScanForm()
+        # form = ScanForm()
+        form = ScanImageForm()
         return render(request, 'scan.html', {"form" : form})
     if request.method == 'POST':
-        form = ScanForm(request.POST)
+        # form = ScanForm(request.POST)
+        form = ScanImageForm(request.POST or None, request.FILES or None)
+        print(request.FILES)
         if form.is_valid():
-            r = request_check(form) #запрос через API проверка чека
+            print('валидно')
+            form.save()
+            r = request_check_image(form)
+            # r = request_check(form) #запрос через API проверка чека
             data = json.loads(r.text) #получение чека 
-            # print(r.text)
+            print(r.text)
             products = data['data']['json']['items'] #получение списка продуктов
             date = data['data']['json']['dateTime'].split('T')[0] #получение даты покупки 
             insert_products(products, request,date) #добавление продуктов в БД
@@ -52,6 +58,7 @@ def insert_products(products, request,date):
         product_in_fridge.quantity = int(product['quantity'])
         product_in_fridge.date_purchase = date
         product_in_fridge.in_fridge = True
+        print(product_in_fridge.in_fridge)
         if product_db:
             try:
                 product_in_fridge_db = ListOfProduct.objects.get(id_user=request.user.id,
@@ -73,12 +80,22 @@ def insert_products(products, request,date):
 def request_check(form):
     data = form.data
     url = 'https://proverkacheka.com/api/v1/check/get'
-    token = 'INPUT YOUR TOKEN HERE'
+    token = '17639.sZzypiyIlKZDohxS6'
     data = {
         'token': token,
         'qrraw': data.get('qrcode_string')
     }
     r = requests.post(url, data=data)
+    return r
+
+
+def request_check_image(form):
+    image = form.cleaned_data['image']
+    url = 'https://proverkacheka.com/api/v1/check/get'
+    token = '17639.sZzypiyIlKZDohxS6'
+    data={'token':token}
+    files = {'qrfile': open(f"media/images/{image}",'rb')}
+    r = requests.post(url, data=data, files=files)
     return r
 
 
